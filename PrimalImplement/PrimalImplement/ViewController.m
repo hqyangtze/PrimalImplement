@@ -21,6 +21,8 @@
     //p.name = @"init";
     
     [p pi_performSelectorWithArgs:@selector(setName:),@"test_name"];
+    
+    [p pi_performSelectorWithArgs:@selector(setAge:),25];
 
 }
 

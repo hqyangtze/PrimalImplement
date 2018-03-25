@@ -16,4 +16,10 @@
     NSLog(@"class setName: %@",name);
 }
 
+- (void)setAge:(NSInteger)age{
+    _age = age;
+    
+    NSLog(@"class setAge:");
+}
+
 @end

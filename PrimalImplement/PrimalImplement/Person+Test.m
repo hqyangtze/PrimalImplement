@@ -14,4 +14,8 @@
     NSLog(@"category setName:");
 }
 
+- (void)setAge:(NSInteger)age{
+    NSLog(@"category setAge:");
+}
+
 @end
