@@ -11,11 +11,11 @@
 @implementation Person (Test)
 
 - (void)setName:(NSString *)name{
-    NSLog(@"category setName:");
+    NSLog(@"%s",__func__);
 }
 
 - (void)setAge:(NSInteger)age{
-    NSLog(@"category setAge:");
+    NSLog(@"%s",__func__);
 }
 
 @end

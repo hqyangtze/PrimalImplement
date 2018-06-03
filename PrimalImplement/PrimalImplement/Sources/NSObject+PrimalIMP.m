@@ -42,25 +42,33 @@ static SEL pi_aliasForSelector(SEL selector) {
     return NSSelectorFromString([NSString stringWithFormat:@"%@_%@",s_pi_selector_prefix,NSStringFromSelector(selector)]);
 }
 
-static void pi_addAliasBaseClassAndSelector(Class cls, SEL sel){
+static void pi_addAliasMethodBaseClassAndSelector(Class cls, SEL sel){
     NSCParameterAssert(cls);
     NSCParameterAssert(sel);
     
     unsigned int count;
-    Method *methods = class_copyMethodList(cls, &count);
-    NSString* needSelName = NSStringFromSelector(sel);
-    SEL newSEL = pi_aliasForSelector(sel);
     IMP targetIMP = nil; Method targetMethod =nil;
-    for (int i = 0; i < count; i++) {
-        Method method = methods[i];
-        NSString *methodName = NSStringFromSelector(method_getName(method));
-        if ([methodName isEqualToString:needSelName]) {
-            targetIMP = ((struct pi_method_t*)method)->imp;
-            targetMethod = method;
-        }
-    }
-    free(methods);
+    NSString* needSelName = NSStringFromSelector(sel);
     
+    while (cls && (targetMethod == nil)) {
+        Method *methods = class_copyMethodList(cls, &count);
+        for (int i = count-1; i >= 0; i--) {
+            Method method = methods[i];
+            NSString *methodName = NSStringFromSelector(method_getName(method));
+            if ([methodName isEqualToString:needSelName]) {/// find
+                targetIMP = ((struct pi_method_t*)method)->imp;
+                targetMethod = method;
+                break;
+            }
+        }
+        free(methods);
+        if (targetMethod) { /// break
+            break;
+        }
+        cls = class_getSuperclass(cls);
+    }
+    
+    SEL newSEL = pi_aliasForSelector(sel);
     if (targetMethod && targetIMP && !class_respondsToSelector(cls, newSEL)) {
         class_addMethod(cls, newSEL, targetIMP, method_getTypeEncoding(targetMethod));
     }
@@ -72,8 +80,12 @@ static void pi_addAliasBaseClassAndSelector(Class cls, SEL sel){
     if (!class_respondsToSelector([self class], temSel)) {
         static OSSpinLock aspect_lock = OS_SPINLOCK_INIT;
         OSSpinLockLock(&aspect_lock);
-        pi_addAliasBaseClassAndSelector([self class], sel);
+        pi_addAliasMethodBaseClassAndSelector([self class], sel);
         OSSpinLockUnlock(&aspect_lock);
+    }
+    if (!class_respondsToSelector([self class], temSel)) {// add fail
+        NSLog(@"%@ unrecognized selector sent",NSStringFromSelector(sel));
+        return nil;
     }
     sel = temSel;
     INIT_INV(sel, nil);
