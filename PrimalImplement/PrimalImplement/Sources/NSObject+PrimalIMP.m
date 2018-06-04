@@ -76,15 +76,17 @@ static void pi_addAliasMethodBaseClassAndSelector(Class cls, SEL sel){
 
 - (id)pi_performSelectorWithArgs:(SEL)sel, ...{
     NSCParameterAssert(sel);
+    Class cls = object_getClass(self);
     SEL temSel = pi_aliasForSelector(sel);
-    if (!class_respondsToSelector(object_getClass(self), temSel)) {
+    if (!class_respondsToSelector(cls, temSel)) {
         static OSSpinLock aspect_lock = OS_SPINLOCK_INIT;
         OSSpinLockLock(&aspect_lock);
-        pi_addAliasMethodBaseClassAndSelector(object_getClass(self), sel);
+        pi_addAliasMethodBaseClassAndSelector(cls, sel);
         OSSpinLockUnlock(&aspect_lock);
     }
-    if (!class_respondsToSelector(object_getClass(self), temSel)) {// add fail
-        NSLog(@"%@ unrecognized selector sent",NSStringFromSelector(sel));
+    if (!class_respondsToSelector(cls, temSel)) {// add fail
+        NSString* symbol = object_isClass(self) ? @"+" : @"-";
+        NSLog(@"%@[%@ %@]: unrecognized selector sent to instance %p",symbol,cls,NSStringFromSelector(sel),self);
         return nil;
     }
     sel = temSel;

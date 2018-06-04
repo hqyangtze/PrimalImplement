@@ -26,7 +26,8 @@
     [goodP pi_performSelectorWithArgs:@selector(setName:),@"test_goodPerson"];
     [goodP pi_performSelectorWithArgs:@selector(setAge:),80];
     goodP.age = 90;
-    
+    [GoodPerson classMethodTest];
+    [GoodPerson pi_performSelectorWithArgs:@selector(classMethodTest)];
     /*{
         Method setName = class_getInstanceMethod([goodP class], @selector(pi_origin__setName:));
         Method setAge = class_getInstanceMethod([goodP class], @selector(pi_origin__setAge:));

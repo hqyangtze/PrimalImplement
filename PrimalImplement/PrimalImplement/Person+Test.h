@@ -10,5 +10,6 @@
 
 @interface Person (Test)
 
++ (void)classMethodTest;
 
 @end

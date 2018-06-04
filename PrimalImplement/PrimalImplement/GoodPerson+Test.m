@@ -10,4 +10,8 @@
 
 @implementation GoodPerson (Test)
 
++ (void)classMethodTest{
+    NSLog(@"%s",__func__);
+}
+
 @end

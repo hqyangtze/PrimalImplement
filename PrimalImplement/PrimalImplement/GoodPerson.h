@@ -9,5 +9,5 @@
 #import "Person.h"
 
 @interface GoodPerson : Person
-
++ (void)classMethodTest;
 @end

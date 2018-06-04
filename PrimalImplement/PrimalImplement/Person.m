@@ -22,4 +22,8 @@
    NSLog(@"%s",__func__);
 }
 
++ (void)classMethodTest{
+    NSLog(@"%s",__func__);
+}
+
 @end
