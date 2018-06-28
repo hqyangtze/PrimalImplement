@@ -51,6 +51,8 @@
         NSLog(@"setAge:  %p",setAge);
         
     }*/
+    [Person pi_performSelectorWithArgs:@selector(hahahha)];
+    [Person pi_performSelectorWithArgs:@selector(setAge:),999];
     NSLog(@"/* ------------- Person --------------- */");
 }
 

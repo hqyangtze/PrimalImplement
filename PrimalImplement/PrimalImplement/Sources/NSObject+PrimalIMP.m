@@ -79,10 +79,14 @@ static void pi_addAliasMethodBaseClassAndSelector(Class cls, SEL sel){
     Class cls = object_getClass(self);
     SEL temSel = pi_aliasForSelector(sel);
     if (!class_respondsToSelector(cls, temSel)) {
-        static OSSpinLock aspect_lock = OS_SPINLOCK_INIT;
-        OSSpinLockLock(&aspect_lock);
+        static dispatch_semaphore_t lock;
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            lock = dispatch_semaphore_create(1);
+        });
+        dispatch_semaphore_wait(lock, DISPATCH_TIME_FOREVER);
         pi_addAliasMethodBaseClassAndSelector(cls, sel);
-        OSSpinLockUnlock(&aspect_lock);
+        dispatch_semaphore_signal(lock);
     }
     if (!class_respondsToSelector(cls, temSel)) {// add fail
         NSString* symbol = object_isClass(self) ? @"+" : @"-";
